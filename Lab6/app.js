@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //For connecting to DB.
-const dbURI = "mongodb+srv://user123:lingu123@appdevlab.tgztkkl.mongodb.net/?retryWrites=true&w=majority";
+const dbURI = "mongodb://127.0.0.1:27017/Lab6";
 
 mongoose.connect(dbURI, {useNewUrlParser : true, useUnifiedTopology : true})
     .then((result)=>{
@@ -64,7 +64,7 @@ app.post('/enterInfo', function (req, res) {
                             return console.log(err);
                         else
                         {
-                            console.log("Data written in enteredData folder!");
+                            //console.log("Data written in enteredData folder!");
                             const detailsFile = fs.readFileSync(userDetails.name+".docx");
                             const fileDetails = new fileModel({
                                 name: userDetails.name,
@@ -94,16 +94,24 @@ app.post('/viewInfo', (req,res)=>{
         .then(data => {
             if(data!=null)
             {
-                console.log(data);
-                fs.writeFile("./fetchedData/" + uname + ".pdf", data.details, function(err){
-                    if (err) 
-                        throw err;
-                    else
-                    {
-                        console.log("Fetched user details and stored it in fetchedData folder!");
-                        res.redirect('/');
-                    }
-                });
+                if(data.password === enteredPass)
+                {
+                    //console.log(data);
+                    fs.writeFile("./fetchedData/" + uname + ".pdf", data.details, function(err){
+                        if (err) 
+                            throw err;
+                        else
+                        {
+                            console.log("Fetched user details and stored it in fetchedData folder!");
+                            res.redirect('/');
+                        }
+                    });
+                }
+                else
+                {
+                    console.log("Incorrect Credentials!");
+                    res.redirect('/');
+                }
             }
             else
             {
